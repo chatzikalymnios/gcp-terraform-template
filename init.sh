@@ -29,8 +29,8 @@ read -e -p "Enter the Github repository name: " -i $GH_REPO_SUGGESTION GH_REPO
 read -e -p "Enter a new GCP project id: " PROJECT_ID
 read -e -p "Enter the desired GCP project display name: " PROJECT_NAME
 read -e -p "Enter the GCP billing account id to link: " BILLING_ACCOUNT
-read -e -p "Enter the GCP region to deploy to: " REGION
-read -e -p "Enter the GCP zone to deploy to: " ZONE
+read -e -p "Enter the GCP region to deploy to: " -i "europe-west4" REGION
+read -e -p "Enter the GCP zone to deploy to: " -i "europe-west4-a" ZONE
 
 ###############################################################################
 ##########                     GCP project setup                     ##########
