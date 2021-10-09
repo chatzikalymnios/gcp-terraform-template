@@ -1,0 +1,51 @@
+name: Terraform destroy
+
+on:
+  workflow_dispatch: # manual trigger
+
+env:
+  TF_BACKEND_GCS_BUCKET: ${{ secrets.TF_BACKEND_GCS_BUCKET }}
+  TF_VAR_project: ${{ secrets.TF_VAR_PROJECT }}
+  TF_VAR_region: europe-west4
+  TF_VAR_zone: europe-west4-a
+
+jobs:
+
+  terraform-destroy:
+    name: Terraform destroy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0.3.1
+        with:
+          token_format: access_token
+          access_token_lifetime: 300s
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+      - name: Set Terraform vars
+        run: echo "TF_VAR_access_token=${{ steps.auth.outputs.access_token }}" >> $GITHUB_ENV
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init \
+            -backend-config="bucket=${TF_BACKEND_GCS_BUCKET}" \
+            -backend-config="access_token=${TF_VAR_access_token}"
+
+      - name: Terraform Destroy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+        run: terraform destroy -auto-approve
