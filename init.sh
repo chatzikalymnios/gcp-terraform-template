@@ -12,7 +12,9 @@ check_prerequisite() {
 }
 
 check_prerequisite gcloud
-check_prerequisite gh
+
+# gh cli doesn't mix well private org repository secret management, so do not require it for now
+# check_prerequisite gh
 
 ###############################################################################
 ##########                  Collect project details                  ##########
@@ -47,7 +49,7 @@ gcloud --project "$PROJECT_ID" services enable \
     sts.googleapis.com
 
 # Allow the GCP APIs to be enabled before continuing
-sleep 20
+sleep 120
 
 gcloud --project "$PROJECT_ID" iam workload-identity-pools create "github" \
     --location "global" \
@@ -105,11 +107,24 @@ echo "Done!"
 echo
 echo "Setting up Github..."
 
-gh secret set TF_BACKEND_GCS_BUCKET -b "$TF_BACKEND_GCS_BUCKET" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
-gh secret set TF_VAR_PROJECT -b "$PROJECT_ID" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
-gh secret set WORKLOAD_IDENTITY_PROVIDER -b "$WORKLOAD_IDENTITY_PROVIDER" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
-gh secret set SERVICE_ACCOUNT -b "$SERVICE_ACCOUNT" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
+# This doesn't seem to work because of gh cli not having admin rights to the repo.
+# Show manual instructions for now.
 
-echo "Done!"
-echo
-echo "Visit your new repository at https://github.com/${GH_REPO_OWNER}/${GH_REPO}"
+# gh secret set TF_BACKEND_GCS_BUCKET -b "$TF_BACKEND_GCS_BUCKET" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
+# gh secret set TF_VAR_PROJECT -b "$PROJECT_ID" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
+# gh secret set WORKLOAD_IDENTITY_PROVIDER -b "$WORKLOAD_IDENTITY_PROVIDER" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
+# gh secret set SERVICE_ACCOUNT -b "$SERVICE_ACCOUNT" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
+
+# echo "Done!"
+# echo
+# echo "Visit your new repository at https://github.com/${GH_REPO_OWNER}/${GH_REPO}"
+
+cat <<EOF
+
+Go to https://github.com/${GH_REPO_OWNER}/${GH_REPO}/settings/secrets/actions to create the following secrets:
+
+TF_BACKEND_GCS_BUCKET      = $TF_BACKEND_GCS_BUCKET
+TF_VAR_PROJECT             = $PROJECT_ID
+WORKLOAD_IDENTITY_PROVIDER = $WORKLOAD_IDENTITY_PROVIDER
+SERVICE_ACCOUNT            = $SERVICE_ACCOUNT
+EOF
