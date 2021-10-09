@@ -18,8 +18,12 @@ check_prerequisite gh
 ##########                  Collect project details                  ##########
 ###############################################################################
 
-read -e -p "Enter the Github repository owner: " GH_REPO_OWNER
-read -e -p "Enter a new repository name: " GH_REPO
+GIT_REMOTE=$(git remote show -n origin | grep "Fetch URL:" | awk -F ':' '{print $3}')
+GH_REPO_OWNER_SUGGESTION=$(echo $GIT_REMOTE | awk -F '/' '{print $1}')
+GH_REPO_SUGGESTION=$(echo $GIT_REMOTE | awk -F '/' '{print $2}' | sed 's/\.git$//')
+
+read -e -p "Enter the Github repository owner: " -i $GH_REPO_OWNER_SUGGESTION GH_REPO_OWNER
+read -e -p "Enter the Github repository name: " -i $GH_REPO_SUGGESTION GH_REPO
 read -e -p "Enter a new GCP project id: " PROJECT_ID
 read -e -p "Enter the desired GCP project display name: " PROJECT_NAME
 read -e -p "Enter the GCP billing account id to link: " BILLING_ACCOUNT
