@@ -42,6 +42,9 @@ gcloud --project "$PROJECT_ID" services enable \
     cloudresourcemanager.googleapis.com \
     sts.googleapis.com
 
+# Allow the GCP APIs to be enabled before continuing
+sleep 20
+
 gcloud --project "$PROJECT_ID" iam workload-identity-pools create "github" \
     --location "global" \
     --description "Identity pool for Github Actions workflows" \
@@ -49,13 +52,15 @@ gcloud --project "$PROJECT_ID" iam workload-identity-pools create "github" \
 
 # See https://token.actions.githubusercontent.com/.well-known/openid-configuration
 # for all supported claims/assertions.
+#
+# Only workflows in this org can get a token (see --attribute-condition)
 
 gcloud --project "$PROJECT_ID" iam workload-identity-pools providers create-oidc "github" \
     --location "global" \
     --workload-identity-pool "github" \
     --display-name "Github" \
     --attribute-mapping "google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud,attribute.repository=assertion.repository" \
-    --attribute-condition "attribute.repository.startsWith(\"${GH_REPO_OWNER}\")" \ # Only workflows in our org's repos can get a a token
+    --attribute-condition "attribute.repository.startsWith(\"${GH_REPO_OWNER}\")" \
     --issuer-uri "https://token.actions.githubusercontent.com"
 
 # Create a service account for Github Actions to impersonate and run terraform
@@ -95,11 +100,6 @@ echo "Done!"
 
 echo
 echo "Setting up Github..."
-
-gh repo create "${GH_REPO_OWNER}/${GH_REPO}" \
-    --confirm \
-    --private \
-    --template https://github.com/neyda-io/infra-template.git
 
 gh secret set TF_BACKEND_GCS_BUCKET -b "$TF_BACKEND_GCS_BUCKET" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
 gh secret set TF_VAR_PROJECT -b "$PROJECT_ID" --org "$GH_REPO_OWNER" --repos "$GH_REPO"

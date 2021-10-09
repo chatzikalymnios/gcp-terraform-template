@@ -6,9 +6,4 @@ We make use of [Workload identity federation](https://cloud.google.com/iam/docs/
 
 ## Project setup
 
-Download and run this bash script and follow the prompts. It's required that you have installed `gcloud` and `gh` (Github CLI) and are logged into your respective account with both.
-
-```
-$ TODO
-```
-
+Click on "Use this template" to create a new repository based on this template. After cloning the new repository to your local machine, run the `init.sh` script to set everything up. It's required that you have installed `gcloud` and `gh` (Github CLI) and are logged into your respective accounts with both.
