@@ -97,6 +97,7 @@ WORKLOAD_IDENTITY_PROVIDER=$(gcloud --project "$PROJECT_ID" iam workload-identit
 TF_BACKEND_GCS_BUCKET="${PROJECT_ID}-tfstate"
 gsutil mb -c STANDARD -p "$PROJECT_ID" -l "$REGION" "gs://${TF_BACKEND_GCS_BUCKET}"
 gsutil versioning set on "gs://${TF_BACKEND_GCS_BUCKET}"
+gsutil lifecycle set tfstate-lifecycle.json "gs://${TF_BACKEND_GCS_BUCKET}"
 
 echo "Done!"
 
