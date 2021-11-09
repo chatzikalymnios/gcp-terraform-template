@@ -13,7 +13,7 @@ check_prerequisite() {
 
 check_prerequisite gcloud
 
-# gh cli doesn't mix well private org repository secret management, so do not require it for now
+# gh cli doesn't mix well with private org repository secret management, so do not require it for now
 # check_prerequisite gh
 
 ###############################################################################
@@ -108,8 +108,8 @@ echo "Done!"
 echo
 echo "Setting up Github..."
 
-# This doesn't seem to work because of gh cli not having admin rights to the repo.
-# Show manual instructions for now.
+# This doesn't seem to work because of gh cli not having admin rights to private org repos.
+# It would probably work with on personal repos, but show manual instructions for now to avoid confusion.
 
 # gh secret set TF_BACKEND_GCS_BUCKET -b "$TF_BACKEND_GCS_BUCKET" --org "$GH_REPO_OWNER" --repos "$GH_REPO"
 # gh secret set TF_VAR_PROJECT -b "$PROJECT_ID" --org "$GH_REPO_OWNER" --repos "$GH_REPO"

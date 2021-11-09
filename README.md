@@ -6,7 +6,16 @@ We make use of workload identity federation to _temporarily_ authenticate to GCP
 
 ## Project setup
 
-Click on "Use this template" to create a new repository based on this template. After cloning the new repository to your local machine, run the `init.sh` script to set everything up. It's required that you have installed and are logged in with `gcloud` ~~and `gh` (Github CLI)~~.
+Click on "Use this template" to create a new repository based on this template. After cloning the new repository to your local machine, `cd` into it and run the `init.sh` bash script to set everything up. I encourage you to inspect the script to understand what is going to be done. It's required that you have installed and are logged in with `gcloud`.
+
+The script will prompt you for some settings (repo owner and name, desired GCP project name and regions, etc) and will
+
+- create a GCP project and link it to the billing account you provided
+- enable the Google APIs needed for Github Actions to be able to run Terraform
+- configure a workload identity pool
+- create a Service Acount for Github Actions
+- create a Cloud Storage bucket for the Terraform state with the lifecycle policy seen in [`tfstate-lifecycle.json`](tfstate-lifecycle.json)
+- print instructions on which secrets to create in the Github repository 
 
 ## References
 
